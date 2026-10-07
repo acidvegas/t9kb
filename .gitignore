@@ -1,0 +1,24 @@
+# KiCad
+*-backups/
+*.kicad_prl
+*.bak
+*.lck
+_autosave-*
+fp-info-cache
+
+# Routing and DRC leftovers
+hardware/route.dsn
+hardware/route*.ses
+hardware/*.log
+hardware/drc.rpt
+
+# Router, download from the freerouting releases page
+tools/freerouting.jar
+
+# Python
+__pycache__/
+*.pyc
+
+# OS / editors
+.DS_Store
+*.swp
