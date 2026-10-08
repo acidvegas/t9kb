@@ -6,7 +6,7 @@ There are virtually no good small modules on the market for basic I2C text input
 
 The layout follows the Grandstream WP826 handset. Keys are metal snap domes on gold pads, the same way real phones do it, and a 3D printed TPU key mat goes on top. A single TI TCA8418 scans the keys, so the board has no firmware to flash. The text side *(multi-tap, T9, key repeat)* lives in an Arduino library on the host.
 
-**Status:** v0.2 hardware is designed and ready to order, not built or tested yet. The Arduino library compiles and its logic is tested on a PC, not yet on real hardware.
+**Status:** v0.2 hardware is designed and ready to order, not built or tested yet. The Arduino library compiles and its logic is tested on a PC, not yet on real hardware. The key mat is designed, not printed yet.
 
 <p align="center">
   <img src="preview/keys.png" width="45%" alt="Key face">
@@ -78,6 +78,49 @@ The `*` symbols, in order: ``. , ' ? ! " - ( ) @ / : _ ; + % * = < > $ [ ] { } \
 | `DeepSleep` | ESP32 deep sleep, woken by a keypress on the INT wire                |
 
 T9 word prediction is planned for later.
+
+## Key mat
+
+A 3D printed TPU key mat that sits on the key face: black keys with flush white legends, sized to the exact key layout. The keys stand 2 mm above a flat base, so a PLA case plate can sit on the base and cover the gaps while the keys poke through. Each key is a separate island joined to the base by a thin flexible web, with a small plunger underneath that presses its dome.
+
+<p align="center">
+  <img src="preview/mat_3d.png" width="45%" alt="Key mat">
+  &nbsp;
+  <img src="preview/mat_under.png" width="45%" alt="Key mat underside">
+</p>
+
+| File                       | What                                               |
+| -------------------------- | -------------------------------------------------- |
+| `mat/t9kb_mat_body.stl`    | Black body, already flipped face down for printing |
+| `mat/t9kb_mat_legends.stl` | White legends, lined up with the body              |
+| `mat/t9kb_mat.scad`        | OpenSCAD source with all dimensions as parameters  |
+
+Legends: digits and letters on the number keys, an envelope *(voicemail)* on 1, speaker, muted microphone, call and hang up icons on the side keys, a line on each soft key, and arrows on the d-pad. The center select key is blank.
+
+Printing *(Bambu A1 mini, OrcaSlicer)*:
+
+1. Import both STLs at once and answer **yes** to loading them as a single object with multiple parts.
+2. Set the body to black TPU and the legends to white TPU *(95A)*. Dry the filament first.
+3. Print with 0.2 mm layers on the textured plate. The key tops print against the plate, so they come out flat and matte. Use the Arachne wall generator so the small letters *(0.3 mm strokes)* print.
+4. The white is only in the first 2 layers *(0.4 mm deep)*, so every color swap happens in the first few minutes. After that the rest of the mat is black.
+5. Turn on supports *(tree, on build plate only)*. Face down, the 2.5 mm border of the base hangs out past the outer keys with nothing under it. That surface ends up under the case plate, so support marks there don't show.
+
+| Part          | Size                                                        |
+| ------------- | ----------------------------------------------------------- |
+| Mat           | 48 x 68 x 3.6 mm                                            |
+| Base          | 1.6 mm thick, rests on the board; the case plate sits on it |
+| Keys          | Stand 2.0 mm above the base, 0.6 mm groove around each      |
+| Key underside | 1.0 mm above the board                                      |
+| Plungers      | 2.0 mm wide on 5 mm domes, 1.5 mm on 4 mm domes             |
+| Legends       | 0.4 mm deep, flush                                          |
+
+`RAISE` *(key height above the base)* in `t9kb_mat.scad` should be your case plate thickness plus how far you want the keys to stick out. The plungers stop 0.1 mm above the domes, set by `DOME_H = 0.5` *(dome height including adhesive)*. Measure your domes once they arrive. If the keys feel pre-pressed or dead, change `DOME_H` and re-export:
+
+```
+cd mat
+openscad -D 'PART="body"' -D PRINT=true -o t9kb_mat_body.stl t9kb_mat.scad
+openscad -D 'PART="legends"' -D PRINT=true -o t9kb_mat_legends.stl t9kb_mat.scad
+```
 
 ## Specs
 
