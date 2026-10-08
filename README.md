@@ -6,7 +6,7 @@ There are virtually no good small modules on the market for basic I2C text input
 
 The layout follows the Grandstream WP826 handset. Keys are metal snap domes on gold pads, the same way real phones do it, and a 3D printed TPU key mat goes on top. A single TI TCA8418 scans the keys, so the board has no firmware to flash. The text side *(multi-tap, T9, key repeat)* lives in an Arduino library on the host.
 
-**Status:** v0.2 hardware is designed and ready to order, not built or tested yet. The Arduino library is not written yet.
+**Status:** v0.2 hardware is designed and ready to order, not built or tested yet. The Arduino library compiles and its logic is tested on a PC, not yet on real hardware.
 
 <p align="center">
   <img src="preview/keys.png" width="45%" alt="Key face">
@@ -23,16 +23,61 @@ The 3D model for case and key mat design is `hardware/t9kb.step`.
 
 ## Arduino library
 
-Planned in `library/` of this repo, written for the ESP32 Arduino core. It will handle everything the keypad chip does not:
+The library is in `library/` *(Arduino, compiles for the ESP32 core)*. Install it by copying or symlinking `library/` into your Arduino `libraries` folder as `T9KB`.
 
-- Named key events *(press, release, long press)* plus CardKB-style `getChar()` codes, so code written for the CardKB is easy to port
-- Multi-tap text entry with a configurable timeout *(800 ms default)* and modes abc, Abc, ABC and 123
-- Long press: a digit key types the digit, `#` changes mode, `0` types `+`
-- Right soft key is backspace, with auto-repeat on backspace and the arrows
-- A raw event API for anyone who wants the key numbers directly
-- T9 word prediction later
+```cpp
+#include <Wire.h>
+#include <T9KB.h>
 
-It will work over the Qwiic cable alone *(polling)*, or with the INT pin wired for instant, interrupt-driven reads.
+T9KB keypad;
+
+void setup() {
+	Wire.begin();
+	keypad.begin(); // or keypad.begin(Wire, INT_GPIO, RST_GPIO) with the INT / RST pads wired
+}
+
+void loop() {
+	keypad.update();
+	while (keypad.available()) {
+		T9Event ev = keypad.read(); // ev.key, ev.type (press / release / long / repeat), ev.code (raw key number)
+	}
+	uint8_t c;
+	while ((c = keypad.getChar())) {
+		// typed text, CardKB style
+	}
+}
+```
+
+Text entry through `getChar()`:
+
+| Key            | Tap in Abc / abc / ABC                            | Long press | 123 mode             |
+| -------------- | ------------------------------------------------- | ---------- | -------------------- |
+| 2 to 9         | Letters, then the digit *(abc2, def3, ... wxyz9)* | The digit  | Digit                |
+| 1              | `1 . , ' ? ! " -`                                 | 1          | 1                    |
+| 0              | Space                                             | 0          | 0, long press `+`    |
+| `*`            | Symbols *(below)*                                 |            | `*`                  |
+| `#`            | `#`                                               | Next mode  | `#`, long press mode |
+| Right soft key | Backspace *(auto-repeats)*                        |            | Backspace            |
+| Arrows         | CardKB arrow codes *(auto-repeat)*                |            | Arrow codes          |
+
+The `*` symbols, in order: ``. , ' ? ! " - ( ) @ / : _ ; + % * = < > $ [ ] { } \ ~ ^ # | ` &``
+
+- **Live preview:** each tap sends the letter right away, and the next tap on the same key sends a backspace plus the next letter. Show the text as it comes in and the screen previews every letter as you cycle. `pending()` is true while the last letter can still change, so you can underline it. The letter is final after 800 ms or when another key is pressed.
+- **Modes:** long press `#` cycles Abc, abc, ABC, 123. It starts in Abc, which capitalizes the first letter and any letter after `. `, `! ` or `? `. `setMode()` changes the mode from code.
+- **Codes:** backspace `0x08`, left `0xB4`, up `0xB5`, down `0xB6`, right `0xB7`, the same values the M5Stack CardKB sends. `getChar()` returns 0 when nothing is waiting.
+- **Events only:** OK, call, end, the left and middle soft keys, speaker and mute type nothing. Handle them from key events.
+- **Events:** read them from the queue with `available()` / `read()`, or set a callback with `onKey()`. `isPressed()` works for every key, so combos like a soft key plus a digit work.
+- **Timing:** `setTapTimeout()` *(800 ms)*, `setLongPress()` *(600 ms)* and `setRepeat()` *(500 ms delay, 80 ms rate)*.
+- **Reading the keypad:** without INT the library polls every 10 ms over I2C. With INT wired it only reads when a key event is waiting.
+
+| Example     | What it shows                                                        |
+| ----------- | -------------------------------------------------------------------- |
+| `Text`      | Line editor on the serial monitor with live preview and mode display |
+| `Events`    | Prints every key event with its raw key number                       |
+| `Dialer`    | 123 mode phone dialer using the `onKey()` callback, Call and End     |
+| `DeepSleep` | ESP32 deep sleep, woken by a keypress on the INT wire                |
+
+T9 word prediction is planned for later.
 
 ## Specs
 
