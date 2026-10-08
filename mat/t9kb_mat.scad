@@ -10,7 +10,7 @@ H = 68;
 R = 2;           // board corner radius
 
 BEZEL  = 1.6;    // flat part between the keys, rests on the board; the case plate sits on it
-RAISE  = 2.0;    // how far the keys stand above the flat part
+RAISE  = 2.6;    // how far the keys stand above the flat part: case plate 1.6 + 1.0 sticking out
 Z0     = 1.0;    // underside of the keys above the board
 WEB    = 0.6;    // flexible web joining each key to the flat part
 GROOVE = 0.6;    // gap around each key

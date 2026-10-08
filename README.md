@@ -81,7 +81,7 @@ T9 word prediction is planned for later.
 
 ## Key mat
 
-A 3D printed TPU key mat that sits on the key face: black keys with flush white legends, sized to the exact key layout. The keys stand 2 mm above a flat base, so a PLA case plate can sit on the base and cover the gaps while the keys poke through. Each key is a separate island joined to the base by a thin flexible web, with a small plunger underneath that presses its dome.
+A 3D printed TPU key mat that sits on the key face: black keys with flush white legends, sized to the exact key layout. The keys stand 2.6 mm above a flat base, so the case plate can sit on the base and cover the gaps while the keys poke through. Each key is a separate island joined to the base by a thin flexible web, with a small plunger underneath that presses its dome.
 
 <p align="center">
   <img src="preview/mat_3d.png" width="45%" alt="Key mat">
@@ -107,9 +107,9 @@ Printing *(Bambu A1 mini, OrcaSlicer)*:
 
 | Part          | Size                                                        |
 | ------------- | ----------------------------------------------------------- |
-| Mat           | 48 x 68 x 3.6 mm                                            |
+| Mat           | 48 x 68 x 4.2 mm                                            |
 | Base          | 1.6 mm thick, rests on the board; the case plate sits on it |
-| Keys          | Stand 2.0 mm above the base, 0.6 mm groove around each      |
+| Keys          | Stand 2.6 mm above the base, 0.6 mm groove around each      |
 | Key underside | 1.0 mm above the board                                      |
 | Plungers      | 2.0 mm wide on 5 mm domes, 1.5 mm on 4 mm domes             |
 | Legends       | 0.4 mm deep, flush                                          |
@@ -121,6 +121,50 @@ cd mat
 openscad -D 'PART="body"' -D PRINT=true -o t9kb_mat_body.stl t9kb_mat.scad
 openscad -D 'PART="legends"' -D PRINT=true -o t9kb_mat_legends.stl t9kb_mat.scad
 ```
+
+## Case
+
+A 3D printed two-part case: a top shell with a hole for every key and a back lid that snaps in. The mat and board drop into the top shell face down, then the lid snaps in and clamps the stack together. No screws, and the board needs no mounting holes.
+
+<p align="center">
+  <img src="preview/case_closed.png" width="45%" alt="Case">
+  &nbsp;
+  <img src="preview/case_exploded.png" width="45%" alt="Case top and lid">
+</p>
+<p align="center">
+  <img src="preview/case_mat.png" width="45%" alt="Case with the key mat">
+</p>
+<p align="center">
+  <img src="preview/case_section.png" width="90%" alt="Cross-section">
+</p>
+
+| File                     | What                                               |
+| ------------------------ | -------------------------------------------------- |
+| `case/t9kb_case_top.stl` | Top shell, already flipped plate down for printing |
+| `case/t9kb_case_lid.stl` | Back lid, floor down                               |
+| `case/t9kb_case.scad`    | OpenSCAD source with all dimensions as parameters  |
+
+| Part      | Size                                                                        |
+| --------- | --------------------------------------------------------------------------- |
+| Outside   | 52.6 x 72.6 x 10.3 mm                                                       |
+| Walls     | 2.0 mm                                                                      |
+| Top plate | 1.6 mm, sits on the mat base; keys stick out 1.0 mm                         |
+| Key holes | 0.3 mm clearance around each key, one round hole for the d-pad              |
+| Lid       | 2.0 mm floor, 1.2 mm skirt that holds the board against the mat             |
+| Snap      | 0.45 mm bead on each long side of the lid skirt, catches 0.3 mm in a groove |
+| Openings  | Qwiic slot on the top edge, wire hole on the bottom edge for the J2 pads    |
+| Inside    | 3.5 mm under the board for the parts *(tallest is the Qwiic jack, 2.96 mm)* |
+
+Print both parts in PETG. It bends instead of cracking, which matters for the snap. 0.2 mm layers, 3 walls, no supports needed. The top shell prints plate down, so the face comes out flat.
+
+Assembly:
+
+1. Put the key mat face down into the top shell so every key sits in its hole.
+2. Stick the domes on the board, then lay the board key face down onto the mat.
+3. Feed any J2 wires out through the bottom hole.
+4. Press the lid in from the back until both long sides click.
+
+To open it, pry the lid out at the Qwiic slot.
 
 ## Specs
 
