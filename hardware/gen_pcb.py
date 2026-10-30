@@ -221,6 +221,15 @@ for i, (name, x, y, r, c, kw, kh, lab, sub, dome) in enumerate(KEYS):
 	board.Add(ko)
 	if kw:
 		rrect(pcbnew.B_SilkS, kx(x), y, kw, kh, 1.5)
+	if dome == 5 and kw: # ticks inside the key outline marking the left / right edges of the 7mm square dome sticker
+		for sx in (-3.5, 3.5):
+			for sy in (-1, 1):
+				line(pcbnew.B_SilkS, kx(x) + sx, y + sy * 2.7, kx(x) + sx, y + sy * 3.3)
+	elif dome == 5: # d-pad center has no outline: corner marks for the sticker instead
+		for sx in (-1, 1):
+			for sy in (-1, 1):
+				line(pcbnew.B_SilkS, kx(x) + sx * 3.5, y + sy * 3.5, kx(x) + sx * 3.5, y + sy * 2.7)
+				line(pcbnew.B_SilkS, kx(x) + sx * 3.5, y + sy * 3.5, kx(x) + sx * 2.7, y + sy * 3.5)
 	if lab:
 		text(pcbnew.B_SilkS, lab, kx(x - 4.6), y, 2.0, 0.3, mirror=True)
 	if sub:
@@ -259,8 +268,13 @@ auto(f'{KFP}/Jumper.pretty', 'SolderJumper-3_P1.3mm_Bridged2Bar123_RoundedPad1.0
 auto(f'{KFP}/Resistor_SMD.pretty', 'R_0603_1608Metric', 'R1', '4.7k', kx(12.5), 8.2, {'1': 'SDA', '2': 'PU_SDA'})
 auto(f'{KFP}/Resistor_SMD.pretty', 'R_0603_1608Metric', 'R2', '4.7k', kx(19.5), 8.2, {'1': 'SCL', '2': 'PU_SCL'})
 
+# M1.4 screw holes in the corners, in the gaps between the board edge, the corner keys' flanges and the tracks.
+# The case's lid screws through these into the face plate.
+for i, (x, y) in enumerate([(1.2, 66.3), (46.6, 66.6), (1.3, 1.5), (46.5, 1.3)]):
+	add_fp(LIB, 'MountingHole_1.5mm_M1.4', f'H{i + 1}', 'M1.4', kx(x), y)
 
-text(pcbnew.F_SilkS, 'T9KB v0.2  acidvegas', 24, 29.0, 1.0, 0.15)
+
+text(pcbnew.F_SilkS, 'T9KB v0.3  acidvegas', 24, 29.0, 1.0, 0.15)
 text(pcbnew.F_SilkS, '3.3V ONLY  TCA8418 @ 0x34', 24, 30.8, 1.0, 0.15)
 
 for fp in board.GetFootprints():
