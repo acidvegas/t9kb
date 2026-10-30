@@ -4,9 +4,9 @@ A tiny phone-style keypad for DIY projects that talks I2C. Plug it into an ESP32
 
 There are virtually no good small modules on the market for basic I2C text input. The [M5Stack CardKB](https://docs.m5stack.com/en/unit/cardkb_1.1) is about the only one, and it is a tiny QWERTY board. Nothing like it exists for T9, so I made this one for T9 phone-style input on my own projects, starting with a DIY VoIP phone.
 
-The layout follows the Grandstream WP826 handset. Keys are metal snap domes on gold pads, the same way real phones do it, and a 3D printed TPU key mat goes on top. A single TI TCA8418 scans the keys, so the board has no firmware to flash. The text side *(multi-tap, T9, key repeat)* lives in an Arduino library on the host.
+The layout follows the Grandstream WP826 handset. Keys are metal snap domes on gold pads, the same way real phones do it, and 3D printed PLA keycaps go on top. A single TI TCA8418 scans the keys, so the board has no firmware to flash. The text side *(multi-tap, T9, key repeat)* lives in an Arduino library on the host.
 
-**Status:** v0.2 hardware is designed and ready to order, not built or tested yet. The Arduino library compiles and its logic is tested on a PC, not yet on real hardware. The key mat is designed, not printed yet.
+**Status:** v0.3 hardware is designed and ready to order, not built or tested yet. The Arduino library compiles and its logic is tested on a PC, not yet on real hardware. The keycaps and case are printed and fit.
 
 <p align="center">
   <img src="preview/keys.png" width="45%" alt="Key face">
@@ -19,7 +19,7 @@ The layout follows the Grandstream WP826 handset. Keys are metal snap domes on g
   <img src="preview/3d_parts.png" width="45%" alt="Parts side, angled">
 </p>
 
-The 3D model for case and key mat design is `hardware/t9kb.step`.
+The 3D model for case and keycap design is `hardware/t9kb.step`.
 
 ## Arduino library
 
@@ -79,60 +79,59 @@ The `*` symbols, in order: ``. , ' ? ! " - ( ) @ / : _ ; + % * = < > $ [ ] { } \
 
 T9 word prediction is planned for later.
 
-## Key mat
+## Keys
 
-A 3D printed TPU key mat that sits on the key face: black keys with flush white legends, sized to the exact key layout. The keys stand 2.6 mm above a flat base, so the case plate can sit on the base and cover the gaps while the keys poke through. Each key is a separate island joined to the base by a thin flexible web, with a small plunger underneath that presses its dome.
+One rigid PLA keycap per key, with no web or membrane. Each cap has a 0.75 mm flange underneath that the case plate holds in, and a small rigid plunger that rests on its dome. Only the dome pushes back, so every key takes the dome's own force and keeps its click. Caps are green with black digits, letters and icons in the top 0.2 mm. Each cap leaves 0.10 mm around it in its plate hole (`GROW`), and the 2.56 mm plate makes deep holes that guide the caps, so pressing a wide key near one end barely tips it.
 
 <p align="center">
-  <img src="preview/mat_3d.png" width="45%" alt="Key mat">
+  <img src="preview/keys_3d.png" width="45%" alt="Keycaps">
   &nbsp;
-  <img src="preview/mat_under.png" width="45%" alt="Key mat underside">
+  <img src="preview/keys_under.png" width="45%" alt="Keycap undersides">
 </p>
 
-| File                       | What                                               |
-| -------------------------- | -------------------------------------------------- |
-| `mat/t9kb_mat_body.stl`    | Black body, already flipped face down for printing |
-| `mat/t9kb_mat_legends.stl` | White legends, lined up with the body              |
-| `mat/t9kb_mat.scad`        | OpenSCAD source with all dimensions as parameters  |
+| File                         | What                                             |
+| ---------------------------- | ------------------------------------------------ |
+| `keys/t9kb_keys_caps.stl`    | All 24 caps, face down for printing              |
+| `keys/t9kb_keys_legends.stl` | Black legends, lined up with the caps            |
+| `keys/t9kb_keys.scad`        | OpenSCAD source with all dimensions as parameters |
 
-Legends: digits and letters on the number keys, an envelope *(voicemail)* on 1, speaker, muted microphone, call and hang up icons on the side keys, a line on each soft key, and arrows on the d-pad. The center select key is blank.
+Legends: digits and letters on the number keys, an envelope *(voicemail)* on 1, speaker, muted microphone, call and hang up icons on the side keys, a line on each soft key, and arrows on the d-pad. The center select key is blank. Every stroke and every gap is at least 0.36 mm, so a 0.4 mm nozzle prints them all.
 
-Printing *(Bambu A1 mini, OrcaSlicer)*:
+Printing *(Bambu A1 mini, PLA, textured plate)*: `build/slice.py` slices every part with OrcaSlicer into ready-to-print `.gcode.3mf` files in `build/out/`:
 
-1. Import both STLs at once and answer **yes** to loading them as a single object with multiple parts.
-2. Set the body to black TPU and the legends to white TPU *(95A)*. Dry the filament first.
-3. Print with 0.2 mm layers on the textured plate. The key tops print against the plate, so they come out flat and matte. Use the Arachne wall generator so the small letters *(0.3 mm strokes)* print.
-4. The white is only in the first 2 layers *(0.4 mm deep)*, so every color swap happens in the first few minutes. After that the rest of the mat is black.
-5. Turn on supports *(tree, on build plate only)*. Face down, the 2.5 mm border of the base hangs out past the outer keys with nothing under it. That surface ends up under the case plate, so support marks there don't show.
+| File                             | What                                                                         |
+| -------------------------------- | ---------------------------------------------------------------------------- |
+| `keys_2color_MANUAL.gcode.3mf`   | Green caps, black legends: load black first, the printer pauses once in the first layer for green |
+| `case_top.gcode.3mf`             | Case top only                                                                |
+| `case.gcode.3mf`                 | Case top and lid                                                             |
 
-| Part          | Size                                                        |
-| ------------- | ----------------------------------------------------------- |
-| Mat           | 48 x 68 x 4.2 mm                                            |
-| Base          | 1.6 mm thick, rests on the board; the case plate sits on it |
-| Keys          | Stand 2.6 mm above the base, 0.6 mm groove around each      |
-| Key underside | 1.0 mm above the board                                      |
-| Plungers      | 2.0 mm wide on 5 mm domes, 1.5 mm on 4 mm domes             |
-| Legends       | 0.4 mm deep, flush                                          |
+The caps print face down at 0.12 mm layers after a 0.2 mm first layer, so the legends are exactly the first layer. No supports.
 
-`RAISE` *(key height above the base)* in `t9kb_mat.scad` should be your case plate thickness plus how far you want the keys to stick out. The plungers stop 0.1 mm above the domes, set by `DOME_H = 0.5` *(dome height including adhesive)*. Measure your domes once they arrive. If the keys feel pre-pressed or dead, change `DOME_H` and re-export:
+| Part     | Size                                                                         |
+| -------- | ---------------------------------------------------------------------------- |
+| Caps     | Key sizes from the layout, 4.36 mm tall, stick out of the plate 1.0 mm        |
+| Flange   | 0.75 mm wide, 0.8 mm thick, stops under the plate                            |
+| Plungers | 1.2 mm on 5 mm domes, 1.0 mm on 4 mm domes *(Snaptron: at most 25% of the dome)* |
+| Tip      | 0.40 mm above the board, resting on the dome                                 |
+| D-pad    | 8 mm center key and 4 arrows, each with its own stop on the plate             |
+
+`TIP` in `t9kb_keys.scad` is where the plunger meets the dome. ButtonWorx publishes no dome height; 5 mm round domes run 0.24 to 0.38 mm and the peel-and-stick film adds about 0.05 mm, so 0.40 leaves at most about 0.1 mm of free play. If the keys feel pre-pressed or don't click, raise it to 0.52. Keep `TOP - TIP` a multiple of the 0.12 mm layers after the 0.2 mm first one, then re-export and re-slice:
 
 ```
-cd mat
-openscad -D 'PART="body"' -D PRINT=true -o t9kb_mat_body.stl t9kb_mat.scad
-openscad -D 'PART="legends"' -D PRINT=true -o t9kb_mat_legends.stl t9kb_mat.scad
+build/export.sh          # keycap and case STLs
+python3 build/slice.py   # every .gcode.3mf
 ```
+
+`slice.py` runs the OrcaSlicer 2.4.2 AppImage extracted to `~/dev/tools/orca/squashfs-root` *(`--appimage-extract`, needs `libwebkit2gtk-4.1-0` and `xvfb`)* with its stock Bambu A1 mini, Bambu PLA Basic and 0.12 mm Fine / 0.20 mm Standard profiles.
 
 ## Case
 
-A 3D printed two-part case: a top shell with a hole for every key and a back lid that snaps in. The mat and board drop into the top shell face down, then the lid snaps in and clamps the stack together. No screws, and the board needs no mounting holes.
+A 3D printed two-part case: a top shell with a hole for every key and a back lid. The keycaps and board drop into the top shell face down, then 4 M1.4 self-tapping screws go through the lid and the board's corner holes *(H1-H4)* into the face plate and clamp the stack together.
 
 <p align="center">
-  <img src="preview/case_closed.png" width="45%" alt="Case">
+  <img src="preview/case_keys.png" width="45%" alt="Case with the keycaps">
   &nbsp;
-  <img src="preview/case_exploded.png" width="45%" alt="Case top and lid">
-</p>
-<p align="center">
-  <img src="preview/case_mat.png" width="45%" alt="Case with the key mat">
+  <img src="preview/case_exploded.png" width="45%" alt="Case top, keycaps, board and lid">
 </p>
 <p align="center">
   <img src="preview/case_section.png" width="90%" alt="Cross-section">
@@ -146,25 +145,24 @@ A 3D printed two-part case: a top shell with a hole for every key and a back lid
 
 | Part      | Size                                                                        |
 | --------- | --------------------------------------------------------------------------- |
-| Outside   | 52.6 x 72.6 x 10.3 mm                                                       |
+| Outside   | 52.6 x 72.6 x 8.8 mm                                                        |
 | Walls     | 2.0 mm                                                                      |
-| Top plate | 1.6 mm, sits on the mat base; keys stick out 1.0 mm                         |
-| Key holes | 0.3 mm clearance around each key, one round hole for the d-pad              |
-| Lid       | 2.0 mm floor, 1.2 mm skirt that holds the board against the mat             |
-| Snap      | 0.45 mm bead on each long side of the lid skirt, catches 0.3 mm in a groove |
-| Openings  | Qwiic slot on the top edge, wire hole on the bottom edge for the J2 pads    |
-| Inside    | 3.5 mm under the board for the parts *(tallest is the Qwiic jack, 2.96 mm)* |
+| Top plate | 2.56 mm, deep key holes that keep the keys from tipping; keys stick out 1.0 mm |
+| Spacer    | 1.6 mm under the plate, a pocket for every keycap flange; rests on a 1.0 mm rim at the board edge, the rest stays 0.3 mm off the board clear of the dome adhesive |
+| Key holes | 0.25 mm around the key outline, 0.10 mm around each cap; a 1.4 mm ring and spokes split the d-pad |
+| Lid       | 1.2 mm floor, 1.2 mm skirt that holds the board against the spacer, a 3.4 mm boss under each board corner |
+| Screws    | 4 x M1.4 x 8 mm self-tapping pan head *(PH00)*: 1.7 mm holes in the lid, 1.5 mm holes in the board, 1.2 mm pilots that stop 0.56 mm under the face |
+| Openings  | Qwiic slot on the top edge and a window in the lid for the jack, wire hole on the bottom edge for the J2 pads |
+| Inside    | 1.8 mm under the board for the parts *(tallest is U1, 0.8 mm; the 2.96 mm Qwiic jack sits in the lid window, flush with the back)* |
 
-Print both parts in PETG. It bends instead of cracking, which matters for the snap. 0.2 mm layers, 3 walls, no supports needed. The top shell prints plate down, so the face comes out flat.
+Print both parts in PLA or PETG. 0.2 mm layers, 3 walls, no supports needed. The top shell prints plate down, so the face comes out flat.
 
 Assembly:
 
-1. Put the key mat face down into the top shell so every key sits in its hole.
-2. Stick the domes on the board, then lay the board key face down onto the mat.
+1. Lay the top shell face down and drop every keycap into its hole from the inside, flange down.
+2. Stick the domes on the board, then lay the board key face down onto the spacer.
 3. Feed any J2 wires out through the bottom hole.
-4. Press the lid in from the back until both long sides click.
-
-To open it, pry the lid out at the Qwiic slot.
+4. Set the lid in from the back and drive the 4 screws until snug. The first time they cut their own thread in the pilots, so don't overtighten.
 
 ## Specs
 
@@ -297,21 +295,12 @@ Bought separately and added by hand:
 
 The pads follow Snaptron's published single-sided contact patterns: 17 pads for 5 / 5.3 mm domes and 7 pads for 4 mm domes *(soft keys and d-pad arrows)*. Prices and stock were checked on 2026-10-07.
 
-Recommended, exact match for the pad patterns with a known force:
+From [ButtonWorx](https://buttonworx.com) *(Maine, US, $4 minimum order, no force listed)*:
 
-| Pads | Part                                 | Source                                                                                          | Force       | Price          | Notes             |
-| ---- | ------------------------------------ | ----------------------------------------------------------------------------------------------- | ----------- | -------------- | ----------------- |
-| 5 mm | Snaptron GX05170 *(5.3 mm four-leg)* | [DigiKey 4955-GX05170-ND](https://www.digikey.com/en/products/detail/snaptron/GX05170/20376517) | 170 g ±30 g | $36.37 for 100 | Loose, needs tape |
-| 4 mm | Snaptron GX04200 *(4.0 mm four-leg)* | [DigiKey 4955-GX04200-ND](https://www.digikey.com/en/products/detail/snaptron/GX04200/20376515) | 200 g ±30 g | $37.99 for 100 | Loose, needs tape |
-| Tape | 1" polyimide *(Kapton style)* tape   | [Amazon B006ZFNB2I](https://www.amazon.com/Mil-Kapton-Tape-Polyimide-yds/dp/B006ZFNB2I)         |             |                |                   |
-
-Cheaper, peel-and-stick, from [ButtonWorx](https://buttonworx.com) *(Maine, US, $4 minimum order, no force listed)*:
-
-| Pads | Part                                                                                                                    | Price      | Fit                                                                    |
-| ---- | ----------------------------------------------------------------------------------------------------------------------- | ---------- | ---------------------------------------------------------------------- |
-| 5 mm | [Snap Dome Round 5mm Dimple, Peel and Stick option](https://buttonworx.com/metal-domes/285-snap-dome-round-5mmD.html)   | $0.80 each | Whole rim on the frame                                                 |
-| 5 mm | [Snap Dome Chopped Circle 5.2mm Peel & Stick](https://buttonworx.com/metal-domes/291-snap-dome-cut-circle-5-2x3-8.html) | $0.50 each | Fits                                                                   |
-| 4 mm | [Snap Dome Round 4mm Dimple, Peel and Stick option](https://buttonworx.com/metal-domes/284-snap-dome-round-4mmD.html)   | $0.80 each | Marginal: rim rests on the frame corners only, no size tolerance given |
+| Pads | Part                                                                                                                    | Price      | Mounting                          |
+| ---- | ----------------------------------------------------------------------------------------------------------------------- | ---------- | --------------------------------- |
+| 5 mm | [Snap Dome Chopped Circle 5.2mm Peel & Stick](https://buttonworx.com/metal-domes/291-snap-dome-cut-circle-5-2x3-8.html) | $0.50 each | Built-in 7 mm square sticker      |
+| 4 mm | [Snap Dome Round 4mm Dimple](https://buttonworx.com/metal-domes/284-snap-dome-round-4mmD.html), loose                   | $0.40 each | Loose: tape it down               |
 
 The adhesive squares around neighboring d-pad domes may overlap; trim them if they do. A 4.5 mm dome does not fit the 4 mm pads.
 
