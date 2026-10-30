@@ -248,6 +248,12 @@ uint8_t T9KB::getChar() {
 bool   T9KB::pending() const { return _pending; }
 T9Mode T9KB::mode() const    { return _mode; }
 
+const char *T9KB::tapSet() const {
+	if (!_pending)
+		return nullptr;
+	return _tapKey == T9_STAR ? SYMBOLS : TAPS[_tapKey - T9_1];
+}
+
 void T9KB::setMode(T9Mode mode) {
 	_pending = false;
 	_mode = mode;

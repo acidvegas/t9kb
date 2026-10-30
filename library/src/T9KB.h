@@ -64,6 +64,7 @@ public:
 	// Multi-tap is a live preview: tapping 2 twice gives 'a', then T9KB_BACKSPACE and 'b'.
 	uint8_t getChar();
 	bool    pending() const; // the last character is a preview that can still change
+	const char *tapSet() const; // characters on the key being multi-tapped while pending(), else nullptr
 
 	void   setMode(T9Mode mode);
 	T9Mode mode() const;
