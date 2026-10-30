@@ -22,3 +22,10 @@ __pycache__/
 # OS / editors
 .DS_Store
 *.swp
+
+# Slicer output and intermediates
+build/out/
+build/profiles/
+build/*.log
+build/*.stl
+build/www/
