@@ -10,7 +10,7 @@ PRINT = false;   // true: key tops on the bed, for the print files
 W = 48;          // board size
 H = 68;
 
-SPACER = 1.6;    // case plate underside above the board (case MAT)
+SPACER = 1.6;    // case plate underside above the board (case SPACER)
 PLATE  = 2.56;   // case plate thickness: deep holes guide the caps, so an off-center press barely tips them
 OUT    = 1.0;    // how far the keys stick out of the plate
 TOP    = SPACER + PLATE + OUT;
