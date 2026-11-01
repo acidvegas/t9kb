@@ -7,7 +7,7 @@ import os
 import subprocess
 import sys
 
-ORCA = os.path.expanduser('~/dev/tools/orca/squashfs-root')
+ORCA = os.path.expanduser('~/.local/share/orca')
 BBL  = os.path.join(ORCA, 'resources/profiles/BBL')
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT  = os.path.join(ROOT, 'build', 'out')
@@ -128,11 +128,6 @@ job_objects = {
 	'case_top': [
 		{'path': stl('case/t9kb_case_top.stl'), 'count': 1, 'filaments': [1], 'pos_x': [64], 'pos_y': [56], 'pos_z': [0], 'object_name': 'case_top'},
 	],
-	# candybar phone: keypad + 1.8in screen, XIAO and buzzer inside
-	'phone': [
-		{'path': stl('case/t9kb_phone_top.stl'), 'count': 1, 'filaments': [1], 'pos_x': [25], 'pos_y': [22], 'pos_z': [0], 'object_name': 'phone_top'},
-		{'path': stl('case/t9kb_phone_lid.stl'), 'count': 1, 'filaments': [1], 'pos_x': [95], 'pos_y': [24], 'pos_z': [0], 'object_name': 'phone_lid'},
-	],
 	'case': [
 		{'path': stl('case/t9kb_case_top.stl'), 'count': 1, 'filaments': [1], 'pos_x': [30], 'pos_y': [56], 'pos_z': [0], 'object_name': 'case_top'},
 		{'path': stl('case/t9kb_case_lid.stl'), 'count': 1, 'filaments': [1], 'pos_x': [100], 'pos_y': [56], 'pos_z': [0], 'object_name': 'case_lid'},
@@ -170,11 +165,11 @@ def main():
 	f_black = write('pla_black', black)
 	f_green = write('pla_green', green)
 
-	jobs = sys.argv[1:] or ['keys_2color_MANUAL', 'case', 'case_top', 'phone']
+	jobs = sys.argv[1:] or ['keys_2color_MANUAL', 'case', 'case_top']
 	for job in jobs:
 		if job == 'keys_2color_MANUAL':
 			slice_job(job, m_manual, write('keys', keys), [f_black, f_green])
-		elif job in ('case', 'case_top', 'phone'):
+		elif job in ('case', 'case_top'):
 			slice_job(job, m_std, write('case', case), [f_black])
 
 
