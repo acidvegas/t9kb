@@ -62,7 +62,7 @@ Text entry through `getChar()`:
 
 The `*` symbols, in order: ``. , ' ? ! " - ( ) @ / : _ ; + % * = < > $ [ ] { } \ ~ ^ # | ` &``
 
-- **Live preview:** each tap sends the letter right away, and the next tap on the same key sends a backspace plus the next letter. Show the text as it comes in and the screen previews every letter as you cycle. `pending()` is true while the last letter can still change, so you can underline it. The letter is final after 800 ms or when another key is pressed.
+- **Live preview:** each tap sends the letter right away, and the next tap on the same key sends a backspace plus the next letter. Show the text as it comes in and the screen previews every letter as you cycle. `pending()` is true while the last letter can still change, so you can underline it, and `tapSet()` returns the characters on that key *(`"abc2"` on 2)* so you can show the choices. It returns `nullptr` when nothing is pending. The letter is final after 800 ms or when another key is pressed.
 - **Modes:** long press `#` cycles Abc, abc, ABC, 123. It starts in Abc, which capitalizes the first letter and any letter after `. `, `! ` or `? `. `setMode()` changes the mode from code.
 - **Codes:** backspace `0x08`, left `0xB4`, up `0xB5`, down `0xB6`, right `0xB7`, the same values the M5Stack CardKB sends. `getChar()` returns 0 when nothing is waiting.
 - **Events only:** OK, call, end, the left and middle soft keys, speaker and mute type nothing. Handle them from key events.
@@ -89,31 +89,31 @@ One rigid PLA keycap per key, with no web or membrane. Each cap has a 0.75 mm fl
   <img src="preview/keys_under.png" width="45%" alt="Keycap undersides">
 </p>
 
-| File                         | What                                             |
-| ---------------------------- | ------------------------------------------------ |
-| `keys/t9kb_keys_caps.stl`    | All 24 caps, face down for printing              |
-| `keys/t9kb_keys_legends.stl` | Black legends, lined up with the caps            |
+| File                         | What                                              |
+| ---------------------------- | ------------------------------------------------- |
+| `keys/t9kb_keys_caps.stl`    | All 24 caps, face down for printing               |
+| `keys/t9kb_keys_legends.stl` | Black legends, lined up with the caps             |
 | `keys/t9kb_keys.scad`        | OpenSCAD source with all dimensions as parameters |
 
 Legends: digits and letters on the number keys, an envelope *(voicemail)* on 1, speaker, muted microphone, call and hang up icons on the side keys, a line on each soft key, and arrows on the d-pad. The center select key is blank. Every stroke and every gap is at least 0.36 mm, so a 0.4 mm nozzle prints them all.
 
 Printing *(Bambu A1 mini, PLA, textured plate)*: `build/slice.py` slices every part with OrcaSlicer into ready-to-print `.gcode.3mf` files in `build/out/`:
 
-| File                             | What                                                                         |
-| -------------------------------- | ---------------------------------------------------------------------------- |
-| `keys_2color_MANUAL.gcode.3mf`   | Green caps, black legends: load black first, the printer pauses once in the first layer for green |
-| `case_top.gcode.3mf`             | Case top only                                                                |
-| `case.gcode.3mf`                 | Case top and lid                                                             |
+| File                           | What                                                                                              |
+| ------------------------------ | ------------------------------------------------------------------------------------------------- |
+| `keys_2color_MANUAL.gcode.3mf` | Green caps, black legends: load black first, the printer pauses once in the first layer for green |
+| `case_top.gcode.3mf`           | Case top only                                                                                     |
+| `case.gcode.3mf`               | Case top and lid                                                                                  |
 
 The caps print face down at 0.12 mm layers after a 0.2 mm first layer, so the legends are exactly the first layer. No supports.
 
-| Part     | Size                                                                         |
-| -------- | ---------------------------------------------------------------------------- |
-| Caps     | Key sizes from the layout, 4.36 mm tall, stick out of the plate 1.0 mm        |
-| Flange   | 0.75 mm wide, 0.8 mm thick, stops under the plate                            |
+| Part     | Size                                                                             |
+| -------- | -------------------------------------------------------------------------------- |
+| Caps     | Key sizes from the layout, 4.36 mm tall, stick out of the plate 1.0 mm           |
+| Flange   | 0.75 mm wide, 0.8 mm thick, stops under the plate                                |
 | Plungers | 1.2 mm on 5 mm domes, 1.0 mm on 4 mm domes *(Snaptron: at most 25% of the dome)* |
-| Tip      | 0.40 mm above the board, resting on the dome                                 |
-| D-pad    | 8 mm center key and 4 arrows, each with its own stop on the plate             |
+| Tip      | 0.40 mm above the board, resting on the dome                                     |
+| D-pad    | 8 mm center key and 4 arrows, each with its own stop on the plate                |
 
 `TIP` in `t9kb_keys.scad` is where the plunger meets the dome. ButtonWorx publishes no dome height; 5 mm round domes run 0.24 to 0.38 mm and the peel-and-stick film adds about 0.05 mm, so 0.40 leaves at most about 0.1 mm of free play. If the keys feel pre-pressed or don't click, raise it to 0.52. Keep `TOP - TIP` a multiple of the 0.12 mm layers after the 0.2 mm first one, then re-export and re-slice:
 
@@ -122,7 +122,9 @@ build/export.sh          # keycap and case STLs
 python3 build/slice.py   # every .gcode.3mf
 ```
 
-`slice.py` runs the OrcaSlicer 2.4.2 AppImage extracted to `~/dev/tools/orca/squashfs-root` *(`--appimage-extract`, needs `libwebkit2gtk-4.1-0` and `xvfb`)* with its stock Bambu A1 mini, Bambu PLA Basic and 0.12 mm Fine / 0.20 mm Standard profiles.
+`slice.py` runs the OrcaSlicer 2.4.2 AppImage extracted to `~/.local/share/orca` *(`--appimage-extract`, needs `libwebkit2gtk-4.1-0` and `xvfb`)* with its stock Bambu A1 mini, Bambu PLA Basic and 0.12 mm Fine / 0.20 mm Standard profiles.
+
+The keycap and case images in `preview/` are rendered from `build/preview.scad` *(`-D 'VIEW="keys"'`, `under`, `case`, `exploded` or `section`)*.
 
 ## Case
 
@@ -143,17 +145,17 @@ A 3D printed two-part case: a top shell with a hole for every key and a back lid
 | `case/t9kb_case_lid.stl` | Back lid, floor down                               |
 | `case/t9kb_case.scad`    | OpenSCAD source with all dimensions as parameters  |
 
-| Part      | Size                                                                        |
-| --------- | --------------------------------------------------------------------------- |
-| Outside   | 52.6 x 72.6 x 8.8 mm                                                        |
-| Walls     | 2.0 mm                                                                      |
-| Top plate | 2.56 mm, deep key holes that keep the keys from tipping; keys stick out 1.0 mm |
+| Part      | Size                                                                                                                                                              |
+| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Outside   | 52.6 x 72.6 x 8.8 mm                                                                                                                                              |
+| Walls     | 2.0 mm                                                                                                                                                            |
+| Top plate | 2.56 mm, deep key holes that keep the keys from tipping; keys stick out 1.0 mm                                                                                    |
 | Spacer    | 1.6 mm under the plate, a pocket for every keycap flange; rests on a 1.0 mm rim at the board edge, the rest stays 0.3 mm off the board clear of the dome adhesive |
-| Key holes | 0.25 mm around the key outline, 0.10 mm around each cap; a 1.4 mm ring and spokes split the d-pad |
-| Lid       | 1.2 mm floor, 1.2 mm skirt that holds the board against the spacer, a 3.4 mm boss under each board corner |
-| Screws    | 4 x M1.4 x 8 mm self-tapping pan head *(PH00)*: 1.7 mm holes in the lid, 1.5 mm holes in the board, 1.2 mm pilots that stop 0.56 mm under the face |
-| Openings  | Qwiic slot on the top edge and a window in the lid for the jack, wire hole on the bottom edge for the J2 pads |
-| Inside    | 1.8 mm under the board for the parts *(tallest is U1, 0.8 mm; the 2.96 mm Qwiic jack sits in the lid window, flush with the back)* |
+| Key holes | 0.25 mm around the key outline, 0.10 mm around each cap; a 1.4 mm ring and spokes split the d-pad                                                                 |
+| Lid       | 1.2 mm floor, 1.2 mm skirt that holds the board against the spacer, a 3.4 mm boss under each board corner                                                         |
+| Screws    | 4 x M1.4 x 8 mm self-tapping pan head *(PH00)*: 1.7 mm holes in the lid, 1.5 mm holes in the board, 1.2 mm pilots that stop 0.56 mm under the face                |
+| Openings  | Qwiic slot on the top edge and a window in the lid for the jack, wire hole on the bottom edge for the J2 pads                                                     |
+| Inside    | 1.8 mm under the board for the parts *(tallest is U1, 0.8 mm; the 2.96 mm Qwiic jack sits in the lid window, flush with the back)*                                |
 
 Print both parts in PLA or PETG. 0.2 mm layers, 3 walls, no supports needed. The top shell prints plate down, so the face comes out flat.
 
@@ -297,10 +299,10 @@ The pads follow Snaptron's published single-sided contact patterns: 17 pads for 
 
 From [ButtonWorx](https://buttonworx.com) *(Maine, US, $4 minimum order, no force listed)*:
 
-| Pads | Part                                                                                                                    | Price      | Mounting                          |
-| ---- | ----------------------------------------------------------------------------------------------------------------------- | ---------- | --------------------------------- |
-| 5 mm | [Snap Dome Chopped Circle 5.2mm Peel & Stick](https://buttonworx.com/metal-domes/291-snap-dome-cut-circle-5-2x3-8.html) | $0.50 each | Built-in 7 mm square sticker      |
-| 4 mm | [Snap Dome Round 4mm Dimple](https://buttonworx.com/metal-domes/284-snap-dome-round-4mmD.html), loose                   | $0.40 each | Loose: tape it down               |
+| Pads | Part                                                                                                                    | Price      | Mounting                     |
+| ---- | ----------------------------------------------------------------------------------------------------------------------- | ---------- | ---------------------------- |
+| 5 mm | [Snap Dome Chopped Circle 5.2mm Peel & Stick](https://buttonworx.com/metal-domes/291-snap-dome-cut-circle-5-2x3-8.html) | $0.50 each | Built-in 7 mm square sticker |
+| 4 mm | [Snap Dome Round 4mm Dimple](https://buttonworx.com/metal-domes/284-snap-dome-round-4mmD.html), loose                   | $0.40 each | Loose: tape it down          |
 
 The adhesive squares around neighboring d-pad domes may overlap; trim them if they do. A 4.5 mm dome does not fit the 4 mm pads.
 
@@ -360,3 +362,7 @@ python3 fab.py    # gerbers, drill files, BOM, CPL
 - U1 uses TI's own land pattern and stencil for the RTW0024B package *(TCA8418 datasheet)*.
 - The key face is the KiCad bottom layer so JLC assembles the top side.
 - LEDs and backlight were removed for this revision. They may come back later.
+
+---
+
+###### Mirrors: [SuperNETs](https://git.supernets.org/acidvegas/) • [GitHub](https://github.com/acidvegas/) • [GitLab](https://gitlab.com/acidvegas/) • [Codeberg](https://codeberg.org/acidvegas/)
