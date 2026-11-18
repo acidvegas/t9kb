@@ -400,7 +400,6 @@ python3 fab.py    # gerbers, drill files, BOM, CPL
 - Dome pads follow Snaptron's single-sided contact patterns for 5 / 5.3 mm and 4 mm domes, with the off-center via-in-pad option for 2-layer boards. There is no solder mask inside the pad area, per Snaptron.
 - U1 uses TI's own land pattern and stencil for the RTW0024B package *(TCA8418 datasheet)*.
 - The key face is the KiCad bottom layer so JLC assembles the top side.
-- LEDs and backlight were removed for this revision. They may come back later.
 
 ---
 
