@@ -9401,7 +9401,7 @@
 		(layer "Edge.Cuts")
 		(uuid "3ab76509-f87c-4063-b56f-7e9235a60a95")
 	)
-	(gr_text "T9KB v0.3  acidvegas"
+	(gr_text "T9KB v1.0  acidvegas"
 		(at 124 129 0)
 		(layer "F.SilkS")
 		(uuid "d3bc9ed6-ab2c-42a5-9457-4a8c726c2f76")

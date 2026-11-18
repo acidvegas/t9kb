@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# T9 I2C keypad v2 - board generator (KiCad 9 pcbnew API)
+# T9KB v1.0 - board generator (KiCad 9 pcbnew API)
 # 24 metal-dome keys, TCA8418 scanner.
 # Key face (dome pads + legends) is the KiCad bottom layer, every part is on the KiCad top layer, so JLC assembles the top side.
 # Layout coordinates below are as seen looking at the key face; kx() mirrors them into KiCad's top-view coordinates.
@@ -274,7 +274,7 @@ for i, (x, y) in enumerate([(1.2, 66.3), (46.6, 66.6), (1.3, 1.5), (46.5, 1.3)])
 	add_fp(LIB, 'MountingHole_1.5mm_M1.4', f'H{i + 1}', 'M1.4', kx(x), y)
 
 
-text(pcbnew.F_SilkS, 'T9KB v0.3  acidvegas', 24, 29.0, 1.0, 0.15)
+text(pcbnew.F_SilkS, 'T9KB v1.0  acidvegas', 24, 29.0, 1.0, 0.15)
 text(pcbnew.F_SilkS, '3.3V ONLY  TCA8418 @ 0x34', 24, 30.8, 1.0, 0.15)
 
 for fp in board.GetFootprints():

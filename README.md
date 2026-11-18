@@ -6,7 +6,7 @@ There are virtually no good small modules on the market for basic I2C text input
 
 The layout follows the Grandstream WP826 handset. Keys are metal snap domes on gold pads, the same way real phones do it, and 3D printed PLA keycaps go on top. A single TI TCA8418 scans the keys, so the board has no firmware to flash. The text side *(multi-tap, T9, key repeat)* lives in an Arduino library on the host.
 
-**Status:** v0.3 hardware is designed and ready to order, not built or tested yet. The Arduino library compiles and its logic is tested on a PC, not yet on real hardware. The keycaps and case are printed and fit.
+**Status:** v1.0 hardware is designed and ready to order, not built or tested yet. The Arduino library compiles and its logic is tested on a PC, not yet on real hardware. The keycaps and case are printed and fit.
 
 <p align="center">
   <img src="preview/keys.png" width="45%" alt="Key face">
