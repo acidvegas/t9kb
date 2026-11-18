@@ -326,22 +326,22 @@ Assembled by JLCPCB *(all on the parts side)*:
 
 Bought separately and added by hand:
 
-| Qty | Part                                         | Where    | Notes                      |
-| --- | -------------------------------------------- | -------- | -------------------------- |
-| 20  | 5 to 5.3 mm metal domes *(see Dome sources)* | Varies   | 17 needed, rest are spares |
-| 10  | 4 mm metal domes *(see Dome sources)*        | Varies   | 7 needed, rest are spares  |
-| 1   | Kapton *(polyimide)* tape                    | Anywhere | Only for loose domes       |
+| Qty | Part                                                            | Where                                                                                                           | Notes                              |
+| --- | --------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| 20  | 5.2 mm peel & stick metal domes *(see Dome sources)*            | [ButtonWorx](https://buttonworx.com/metal-domes/291-snap-dome-cut-circle-5-2x3-8.html)                          | 17 needed, rest are spares         |
+| 10  | 4 mm peel & stick metal domes *(see Dome sources)*              | [ButtonWorx](https://buttonworx.com/metal-domes/284-258-snap-dome-round-4mmD.html#/71-snap_dome-peel_and_stick) | 7 needed, rest are spares          |
+| 100 | M1.4 x 8 mm countersunk self-tapping screws *(stainless, PH00)* | [Amazon](https://www.amazon.com/dp/B01FL9FICY)                                                                  | 4 needed for the case, uxcell pack |
 
 ## Dome sources
 
-The pads follow Snaptron's published single-sided contact patterns: 17 pads for 5 / 5.3 mm domes and 7 pads for 4 mm domes *(soft keys and d-pad arrows)*. Prices and stock were checked on 2026-10-07.
+The pads follow Snaptron's published single-sided contact patterns: 17 pads for 5 / 5.3 mm domes and 7 pads for 4 mm domes *(soft keys and d-pad arrows)*. Prices and stock were checked on 2026-11-18.
 
 From [ButtonWorx](https://buttonworx.com) *(Maine, US, $4 minimum order, no force listed)*:
 
-| Pads | Part                                                                                                                    | Price      | Mounting                     |
-| ---- | ----------------------------------------------------------------------------------------------------------------------- | ---------- | ---------------------------- |
-| 5 mm | [Snap Dome Chopped Circle 5.2mm Peel & Stick](https://buttonworx.com/metal-domes/291-snap-dome-cut-circle-5-2x3-8.html) | $0.50 each | Built-in 7 mm square sticker |
-| 4 mm | [Snap Dome Round 4mm Dimple](https://buttonworx.com/metal-domes/284-snap-dome-round-4mmD.html), loose                   | $0.40 each | Loose: tape it down          |
+| Pads | Part                                                                                                                                                   | Price      | Mounting                             |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------- | ------------------------------------ |
+| 5 mm | [Snap Dome Chopped Circle 5.2mm Peel & Stick](https://buttonworx.com/metal-domes/291-snap-dome-cut-circle-5-2x3-8.html)                                | $0.50 each | Built-in 7 mm square sticker         |
+| 4 mm | [Snap Dome Round 4mm Dimple](https://buttonworx.com/metal-domes/284-258-snap-dome-round-4mmD.html#/71-snap_dome-peel_and_stick), Peel and Stick option | $0.80 each | Built-in sticker *(size not listed)* |
 
 The adhesive squares around neighboring d-pad domes may overlap; trim them if they do. A 4.5 mm dome does not fit the 4 mm pads.
 
@@ -372,7 +372,7 @@ If either is turned wrong, rotate it right there in the preview. Resistors and c
 
 1. Clean the key face with isopropyl alcohol.
 2. Place a dome on each gold pad, centered on the round contact *(not on the small hole, which is off-center on purpose)*. The small pads *(soft keys and d-pad arrows)* take 4 mm domes, the rest take 5 mm domes. Four-leg domes go with a leg on each of the 4 cut corners of the gold frame.
-3. Tape over the domes with Kapton tape, or use peel-and-stick domes. Air vents through the small hole in each center pad, so the tape can cover the domes fully.
+3. Press each dome's sticker down flat around it. Air vents through the small hole in each center pad, so the sticker can cover the dome fully.
 4. Test by pressing each dome with a finger while reading key events.
 
 A dome that sits crooked can be peeled off and placed again. Nothing on the key face is soldered.
