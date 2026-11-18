@@ -4,9 +4,9 @@ A tiny phone-style keypad for DIY projects that talks I2C. Plug it into an ESP32
 
 There are virtually no good small modules on the market for basic I2C text input. The [M5Stack CardKB](https://docs.m5stack.com/en/unit/cardkb_1.1) is about the only one, and it is a tiny QWERTY board. Nothing like it exists for T9, so I made this one for T9 phone-style input on my own projects, starting with a DIY VoIP phone.
 
-The layout follows the Grandstream WP826 handset. Keys are metal snap domes on gold pads, the same way real phones do it, and 3D printed PLA keycaps go on top. A single TI TCA8418 scans the keys, so the board has no firmware to flash. The text side *(multi-tap, T9, key repeat)* lives in an Arduino library on the host.
+The layout follows the Grandstream WP826 handset. Keys are metal snap domes on gold pads, the same way real phones do it, and 3D printed PLA keycaps go on top. A single TI TCA8418 scans the keys, so the board has no firmware to flash. The text side *(T9 words, multi-tap, key repeat)* lives in a library on the host, for Arduino and ESP-IDF.
 
-**Status:** v1.0 hardware is designed and ready to order, not built or tested yet. The Arduino library compiles and its logic is tested on a PC, not yet on real hardware. The keycaps and case are printed and fit.
+**Status:** v1.0 hardware is designed and ready to order, not built or tested yet. The library compiles for ESP32 and RP2040 and its logic is tested on a PC against a simulated TCA8418, not yet on real hardware. The keycaps and case are printed and fit.
 
 <p align="center">
   <img src="preview/keys.png" width="45%" alt="Key face">
@@ -21,9 +21,20 @@ The layout follows the Grandstream WP826 handset. Keys are metal snap domes on g
 
 The 3D model for case and keycap design is `hardware/t9kb.step`.
 
-## Arduino library
+## Library
 
-The library is in `library/` *(Arduino, compiles for the ESP32 core)*. Install it by copying or symlinking `library/` into your Arduino `libraries` folder as `T9KB`.
+The library is in `library/`: one plain C core *(the key, text and T9 logic, no platform code)* with an Arduino wrapper and an ESP-IDF component on top. Any other platform only needs an I2C register read / write and a millisecond clock.
+
+| Folder             | What                                                                          |
+| ------------------ | ----------------------------------------------------------------------------- |
+| `library/arduino/` | Arduino library *(ESP32, RP2040, AVR, STM32, ...)*, with the C core in `src/` |
+| `library/esp-idf/` | ESP-IDF component `t9kb` *(ESP-IDF 5.2 or newer)* and a `basic` example       |
+| `library/tests/`   | Host tests for the core against a simulated TCA8418: `make -C library/tests`  |
+| `library/tools/`   | `gen_dict.py`, which builds the T9 word list                                  |
+
+### Arduino
+
+Install it by copying or symlinking `library/arduino/` into your Arduino `libraries` folder as `T9KB`.
 
 ```cpp
 #include <Wire.h>
@@ -48,36 +59,64 @@ void loop() {
 }
 ```
 
-Text entry through `getChar()`:
+| Example     | What it shows                                                                          |
+| ----------- | -------------------------------------------------------------------------------------- |
+| `Text`      | Line editor on the serial monitor with T9, live preview and mode display               |
+| `Events`    | Prints every key event with its raw key number                                         |
+| `Dialer`    | 123 mode phone dialer using the `onKey()` callback, Call and End                       |
+| `Custom`    | Own punctuation and symbols, End as backspace, a different mode key, hot-plug messages |
+| `DeepSleep` | ESP32 deep sleep, woken by a keypress on the INT wire                                  |
 
-| Key            | Tap in Abc / abc / ABC                            | Long press | 123 mode             |
-| -------------- | ------------------------------------------------- | ---------- | -------------------- |
-| 2 to 9         | Letters, then the digit *(abc2, def3, ... wxyz9)* | The digit  | Digit                |
-| 1              | `1 . , ' ? ! " -`                                 | 1          | 1                    |
-| 0              | Space                                             | 0          | 0, long press `+`    |
-| `*`            | Symbols *(below)*                                 |            | `*`                  |
-| `#`            | `#`                                               | Next mode  | `#`, long press mode |
-| Right soft key | Backspace *(auto-repeats)*                        |            | Backspace            |
-| Arrows         | CardKB arrow codes *(auto-repeat)*                |            | Arrow codes          |
+### ESP-IDF
+
+Point `EXTRA_COMPONENT_DIRS` at `library/esp-idf` and add `t9kb` to your component's `REQUIRES`. The glue takes an I2C master bus you created; everything else is the core API on `&kb.core`:
+
+```c
+#include "t9kb_idf.h"
+
+static t9kb_idf kb;
+t9kb_idf_begin(&kb, bus, INT_GPIO, RST_GPIO); // -1 for pins that aren't wired
+
+while (true) {
+	t9kb_idf_update(&kb);
+	uint8_t c;
+	while ((c = t9kb_get_char(&kb.core))) {
+		// typed text
+	}
+	vTaskDelay(pdMS_TO_TICKS(5));
+}
+```
+
+The Arduino methods map one to one onto the core functions: `getChar()` is `t9kb_get_char()`, `setMode()` is `t9kb_set_mode()`, and so on *(see `t9kb_core.h`)*.
+
+### Typing
+
+Text comes out of `getChar()`. Long press `#` cycles T9, Abc, abc, ABC, 123, starting in T9.
+
+| Key            | T9                                  | Abc / abc / ABC                                   | 123         | Long press    |
+| -------------- | ----------------------------------- | ------------------------------------------------- | ----------- | ------------- |
+| 2 to 9         | One press per letter                | Letters, then the digit *(abc2, def3, ... wxyz9)* | Digit       | The digit     |
+| 1              | `. , ? ! ' " - 1`                   | `. , ? ! ' " - 1`                                 | 1           | 1             |
+| 0              | Accepts the word, space             | Space                                             | 0           | 0, `+` in 123 |
+| `*`            | Next word, or symbols between words | Symbols *(below)*                                 | `*`         |               |
+| `#`            | `#`                                 | `#`                                               | `#`         | Next mode     |
+| Right soft key | Takes a key off the word, backspace | Backspace *(auto-repeats)*                        | Backspace   |               |
+| Arrows         | CardKB arrow codes *(auto-repeat)*  | CardKB arrow codes *(auto-repeat)*                | Arrow codes |               |
 
 The `*` symbols, in order: ``. , ' ? ! " - ( ) @ / : _ ; + % * = < > $ [ ] { } \ ~ ^ # | ` &``
 
-- **Live preview:** each tap sends the letter right away, and the next tap on the same key sends a backspace plus the next letter. Show the text as it comes in and the screen previews every letter as you cycle. `pending()` is true while the last letter can still change, so you can underline it, and `tapSet()` returns the characters on that key *(`"abc2"` on 2)* so you can show the choices. It returns `nullptr` when nothing is pending. The letter is final after 800 ms or when another key is pressed.
-- **Modes:** long press `#` cycles Abc, abc, ABC, 123. It starts in Abc, which capitalizes the first letter and any letter after `. `, `! ` or `? `. `setMode()` changes the mode from code.
+- **T9:** press each key once per letter and the most common English word for those keys shows as you type: 4663 shows `good`, `*` changes it to `home`, then `gone`. 0, punctuation or any other key accepts the word. The right soft key takes the last key off the word. With no match, the start of the most common longer word shows, or the digits. The word list has 20,000 English words and takes about 115 KB of flash, so AVR boards leave it out and start in Abc *(define `T9KB_DICT 0` to leave it out anywhere)*.
+- **Live preview:** every key sends its letter right away, and a change sends backspaces plus the new letters, so a screen that shows `getChar()` as it comes in previews every letter and every T9 word. `pending()` is true while the last letter or word can still change, so you can underline it. `tapSet()` returns the characters on the key being multi-tapped *(`"abc2"` on 2)* and `word()` the T9 word being typed, or `nullptr`. A multi-tap letter is final after 800 ms or when another key is pressed; a T9 word stays open until it is accepted.
+- **Sentence case:** T9 and Abc capitalize the first letter and any letter after `. `, `! ` or `? `, and T9 always types `I` as a capital. Call `clearText()` when your app clears its text *(for example after sending a message)* so the next letter starts a sentence again.
 - **Codes:** backspace `0x08`, left `0xB4`, up `0xB5`, down `0xB6`, right `0xB7`, the same values the M5Stack CardKB sends. `getChar()` returns 0 when nothing is waiting.
 - **Events only:** OK, call, end, the left and middle soft keys, speaker and mute type nothing. Handle them from key events.
-- **Events:** read them from the queue with `available()` / `read()`, or set a callback with `onKey()`. `isPressed()` works for every key, so combos like a soft key plus a digit work.
+- **Events:** read them from the queue with `available()` / `read()`, or set a callback with `onKey()`. `isPressed()` works for every key, so combos like a soft key plus a digit work. `onModeChange()` is called when the mode key changes the mode.
+- **Customizing:** `setTaps(T9_1, ".,?!1")` replaces the multi-tap characters of 1 to 9 and `setSymbols()` the `*` list. `setBackspaceKey()`, `setModeKey()` and `setRepeating()` move backspace, the mode change and auto-repeat to other keys.
 - **Timing:** `setTapTimeout()` *(800 ms)*, `setLongPress()` *(600 ms)* and `setRepeat()` *(500 ms delay, 80 ms rate)*.
 - **Reading the keypad:** without INT the library polls every 10 ms over I2C. With INT wired it only reads when a key event is waiting.
+- **Hot-plug:** the library checks the keypad once a second. Unplugged, `connected()` goes false and held keys are released; plugged back in, it is set up again by itself. A full key event buffer drops its oldest events, so no key can look stuck.
 
-| Example     | What it shows                                                        |
-| ----------- | -------------------------------------------------------------------- |
-| `Text`      | Line editor on the serial monitor with live preview and mode display |
-| `Events`    | Prints every key event with its raw key number                       |
-| `Dialer`    | 123 mode phone dialer using the `onKey()` callback, Call and End     |
-| `DeepSleep` | ESP32 deep sleep, woken by a keypress on the INT wire                |
-
-T9 word prediction is planned for later.
+The T9 word ranking comes from the Google Books Ngram data via [top-english-wordlists](https://github.com/david47k/top-english-wordlists) *(CC BY 3.0)*. It is filtered against [SCOWL](http://wordlist.aspell.net/) so no names or foreign words get in: SCOWL is Copyright 2000-2011 by Kevin Atkinson, and permission to use, copy, modify, distribute and sell these word lists, the associated scripts, the output created from the scripts, and its documentation for any purpose is hereby granted without fee, provided that the above copyright notice appears in all copies and that both that copyright notice and this permission notice appear in supporting documentation. Kevin Atkinson makes no representations about the suitability of this array for any purpose. It is provided "as is" without express or implied warranty.
 
 ## Keys
 

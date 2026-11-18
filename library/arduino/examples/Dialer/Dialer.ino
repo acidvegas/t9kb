@@ -12,7 +12,8 @@ void onKey(T9Event ev) {
 		return;
 	if (ev.key == T9_CALL && number.length() && !inCall) {
 		inCall = true;
-		Serial.printf("calling %s\n", number.c_str());
+		Serial.print("calling ");
+		Serial.println(number);
 	} else if (ev.key == T9_END) {
 		Serial.println(inCall ? "hung up" : "cleared");
 		inCall = false;
@@ -45,6 +46,7 @@ void loop() {
 			number += (char)c;
 		else
 			continue;
-		Serial.printf("number: %s\n", number.c_str());
+		Serial.print("number: ");
+		Serial.println(number);
 	}
 }

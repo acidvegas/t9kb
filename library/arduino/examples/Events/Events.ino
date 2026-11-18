@@ -23,7 +23,11 @@ void loop() {
 	while (keypad.available()) {
 		static const char *const TYPES[] = { "press", "release", "long", "repeat" };
 		T9Event ev = keypad.read();
-		Serial.printf("%-11s %-7s raw %d\n", T9KB::name(ev.key), TYPES[ev.type], ev.code);
+		Serial.print(T9KB::name(ev.key));
+		Serial.print(' ');
+		Serial.print(TYPES[ev.type]);
+		Serial.print(" raw ");
+		Serial.println(ev.code);
 	}
 	while (keypad.getChar()); // text is not used here, keep the queue empty
 }

@@ -29,3 +29,6 @@ build/profiles/
 build/*.log
 build/*.stl
 build/www/
+
+# T9 word list sources, downloaded by library/tools/gen_dict.py
+library/tools/dl/

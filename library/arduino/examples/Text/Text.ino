@@ -1,9 +1,10 @@
-// T9KB text entry: type on the keypad, the line shows on the serial monitor with a live preview.
-// Long press # changes mode (Abc / abc / ABC / 123), right soft key is backspace, OK sends the line.
+// T9KB text entry: type on the keypad, the line shows on the serial monitor as it changes.
+// Long press # changes mode (T9 / Abc / abc / ABC / 123), right soft key is backspace, OK sends the line.
+// In T9 mode press each key once per letter; * shows the next word for the same keys, 0 accepts it with a space.
 #include <Wire.h>
 #include <T9KB.h>
 
-static const char *const MODES[] = { "Abc", "abc", "ABC", "123" };
+static const char *const MODES[] = { "T9", "Abc", "abc", "ABC", "123" };
 
 T9KB keypad;
 String line;
@@ -25,8 +26,10 @@ void loop() {
 	while (keypad.available()) {
 		T9Event ev = keypad.read();
 		if (ev.key == T9_OK && ev.type == T9_PRESS) {
-			Serial.printf("sent: %s\n", line.c_str());
+			Serial.print("sent: ");
+			Serial.println(line);
 			line = "";
+			keypad.clearText(); // the next letter starts a new sentence
 		}
 		changed |= ev.key == T9_HASH && ev.type == T9_LONG; // mode change
 	}
@@ -43,7 +46,11 @@ void loop() {
 	static bool wasPending = false;
 	if (changed || wasPending != keypad.pending()) {
 		wasPending = keypad.pending();
-		// [_] marks the previewed letter that the next tap can still change
-		Serial.printf("[%s] %s%s\n", MODES[keypad.mode()], line.c_str(), wasPending ? " [_]" : "");
+		// [_] marks a letter or T9 word that the next key can still change
+		Serial.print('[');
+		Serial.print(MODES[keypad.mode()]);
+		Serial.print("] ");
+		Serial.print(line);
+		Serial.println(wasPending ? " [_]" : "");
 	}
 }
