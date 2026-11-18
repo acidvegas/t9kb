@@ -1,6 +1,6 @@
 // T9KB case: top shell with key cutouts + a screwed-on back lid.
 // The keycaps and board drop into the top shell face down, then the lid goes on and 4 M1.4 self-tapping screws
-// through the board's corner holes (H1-H4) into the face plate clamp the stack. The Qwiic jack sits in a lid window.
+// through the board's corner holes (H1-H4) into the face plate clamp the stack. Countersunk lid holes keep the flat heads flush. The Qwiic jack sits in a lid window.
 // Under the plate a spacer holds the board 1.6 mm down, with a pocket for every keycap flange.
 // Coordinates follow the board's key face: x right, y down from the top left corner, z = 0 at the key face.
 // Export: openscad -D 'PART="top"' / "lid", PRINT=true lays each part flat for printing.
@@ -41,6 +41,7 @@ SCREWS   = [[1.2, 66.3], [46.6, 66.6], [1.3, 1.5], [46.5, 1.3]];
 PILOT    = 1.2;  // self-tapping pilot in the top, stops 0.56 mm under the face
 SCREW_D  = 1.7;  // lid clearance hole
 BOSS_D   = 3.4;  // lid boss under each board corner: 0.85 mm wall, two printed lines
+CSINK_D  = 2.8;  // 90 degree countersink in the lid bottom, M1.4 flat head (2.6 mm) sits flush
 
 $fn = 64;
 
@@ -99,6 +100,7 @@ module lid() {
 		translate([QWIIC_X - 5, Y(7), Z_BOT - 1]) cube([10, 12, FLOOR + BACK + 2]);
 		// screw clearance holes
 		for (s = SCREWS) translate([s[0], Y(s[1]), Z_BOT - 1]) cylinder(d = SCREW_D, h = FLOOR + BACK + 2, $fn = 24);
+		for (s = SCREWS) translate([s[0], Y(s[1]), Z_BOT - 0.01]) cylinder(d1 = CSINK_D + 0.02, d2 = 0, h = CSINK_D / 2 + 0.01, $fn = 24);
 		// clear the breakout pads and their wires
 		translate([WIRE_X - 8, Y(H + 5), Z_IN]) cube([16, 7, BACK + 1]);
 	}

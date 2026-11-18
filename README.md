@@ -128,7 +128,7 @@ The keycap and case images in `preview/` are rendered from `build/preview.scad` 
 
 ## Case
 
-A 3D printed two-part case: a top shell with a hole for every key and a back lid. The keycaps and board drop into the top shell face down, then 4 M1.4 self-tapping screws go through the lid and the board's corner holes *(H1-H4)* into the face plate and clamp the stack together.
+A 3D printed two-part case: a top shell with a hole for every key and a back lid. The keycaps and board drop into the top shell face down, then 4 M1.4 flat head self-tapping screws go through the lid and the board's corner holes *(H1-H4)* into the face plate and clamp the stack together.
 
 <p align="center">
   <img src="preview/case_keys.png" width="45%" alt="Case with the keycaps">
@@ -145,17 +145,17 @@ A 3D printed two-part case: a top shell with a hole for every key and a back lid
 | `case/t9kb_case_lid.stl` | Back lid, floor down                               |
 | `case/t9kb_case.scad`    | OpenSCAD source with all dimensions as parameters  |
 
-| Part      | Size                                                                                                                                                              |
-| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Outside   | 52.6 x 72.6 x 8.8 mm                                                                                                                                              |
-| Walls     | 2.0 mm                                                                                                                                                            |
-| Top plate | 2.56 mm, deep key holes that keep the keys from tipping; keys stick out 1.0 mm                                                                                    |
-| Spacer    | 1.6 mm under the plate, a pocket for every keycap flange; rests on a 1.0 mm rim at the board edge, the rest stays 0.3 mm off the board clear of the dome adhesive |
-| Key holes | 0.25 mm around the key outline, 0.10 mm around each cap; a 1.4 mm ring and spokes split the d-pad                                                                 |
-| Lid       | 1.2 mm floor, 1.2 mm skirt that holds the board against the spacer, a 3.4 mm boss under each board corner                                                         |
-| Screws    | 4 x M1.4 x 8 mm self-tapping pan head *(PH00)*: 1.7 mm holes in the lid, 1.5 mm holes in the board, 1.2 mm pilots that stop 0.56 mm under the face                |
-| Openings  | Qwiic slot on the top edge and a window in the lid for the jack, wire hole on the bottom edge for the J2 pads                                                     |
-| Inside    | 1.8 mm under the board for the parts *(tallest is U1, 0.8 mm; the 2.96 mm Qwiic jack sits in the lid window, flush with the back)*                                |
+| Part      | Size                                                                                                                                                                                                                  |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Outside   | 52.6 x 72.6 x 8.8 mm                                                                                                                                                                                                  |
+| Walls     | 2.0 mm                                                                                                                                                                                                                |
+| Top plate | 2.56 mm, deep key holes that keep the keys from tipping; keys stick out 1.0 mm                                                                                                                                        |
+| Spacer    | 1.6 mm under the plate, a pocket for every keycap flange; rests on a 1.0 mm rim at the board edge, the rest stays 0.3 mm off the board clear of the dome adhesive                                                     |
+| Key holes | 0.25 mm around the key outline, 0.10 mm around each cap; a 1.4 mm ring and spokes split the d-pad                                                                                                                     |
+| Lid       | 1.2 mm floor, 1.2 mm skirt that holds the board against the spacer, a 3.4 mm boss under each board corner                                                                                                             |
+| Screws    | 4 x M1.4 x 8 mm self-tapping flat head *(countersunk, PH00)*: 1.7 mm holes in the lid with a 2.8 mm 90° countersink so the heads sit flush, 1.5 mm holes in the board, 1.2 mm pilots that stop 0.56 mm under the face |
+| Openings  | Qwiic slot on the top edge and a window in the lid for the jack, wire hole on the bottom edge for the J2 pads                                                                                                         |
+| Inside    | 1.8 mm under the board for the parts *(tallest is U1, 0.8 mm; the 2.96 mm Qwiic jack sits in the lid window, flush with the back)*                                                                                    |
 
 Print both parts in PLA or PETG. 0.2 mm layers, 3 walls, no supports needed. The top shell prints plate down, so the face comes out flat.
 
